@@ -1,1 +1,0 @@
-import Sitemapper from "sitemapper";
