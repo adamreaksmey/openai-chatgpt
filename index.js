@@ -1,4 +1,5 @@
 import Sitemapper from "sitemapper";
 import OpenAI from "openai";
 
-console.log("hello world")
+const openai = new OpenAI();
+console.log(openai)
