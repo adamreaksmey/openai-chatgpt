@@ -1,9 +1,16 @@
 import Sitemapper from "sitemapper";
 import OpenAI from "openai";
 import { Assistant } from "openai/resources/beta/assistants/assistants";
+import dotenv from 'dotenv';
+dotenv.config();
 
-const openai = new OpenAI();
-console.log("hello world");
+const apiKey = process.env.OPEN_AI_KEY;
+const openai = new OpenAI({
+  apiKey: apiKey,
+});
+
+// console.log("hello world");
+// console.log(process.env.OPEN_AI_KEY);
 
 const fullWebsiteAssistant = async (url: string): Promise<Assistant> => {
   const sitemap = new Sitemapper({ url });

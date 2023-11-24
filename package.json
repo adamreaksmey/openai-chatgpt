@@ -9,6 +9,7 @@
   "author": "adam",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.3.1",
     "openai": "^4.20.0",
     "sitemapper": "^3.2.8"
   },
