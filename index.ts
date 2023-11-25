@@ -8,7 +8,7 @@ const apiKey = process.env.OPEN_AI_KEY;
 
 const openai = new OpenAI({ apiKey: apiKey });
 
-async function main() {
+async function main(): Promise<OpenAI.Chat.Completions.ChatCompletion> {
   const completion = await openai.chat.completions.create({
     messages: [{"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Who won the world series in 2020?"},
@@ -18,5 +18,6 @@ async function main() {
   });
 
   console.log(completion.choices[0]);
+  return completion;
 }
 main();
