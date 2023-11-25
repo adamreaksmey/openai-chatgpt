@@ -1,4 +1,4 @@
-const quizJson: object = {
+const quizJson = {
   name: "display_quiz",
   description:
     "Displays a quiz to the student, and returns the student's response. A single quiz can have multiple questions.",
