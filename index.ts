@@ -28,14 +28,14 @@ const main = async () => {
         },
       ],
       // will work much better with the new model
-      model: "gpt-4-1106-preview",
-      // model: "gpt-3.5-turbo-1106",
+      model: "gpt-3.5-turbo-1106",
     });
 
     console.log("Log on no errors.");
 
     // threads created
     const thread = await openai.beta.threads.create();
+
     // Use continueConversation as state for keep asking questions
     let continueConversation = true;
     let isQuizAnswered = false;
@@ -110,3 +110,5 @@ const main = async () => {
     console.log(error);
   }
 };
+
+main();
