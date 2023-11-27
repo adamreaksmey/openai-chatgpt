@@ -25,8 +25,11 @@ const main = async () => {
       // model: "gpt-3.5-turbo-1106",
     });
 
-    console.log("First log")
+    console.log("Log on no errors.");
+    const thread = await openai.beta.threads.create();
+
+    console.log("First log");
   } catch (error) {
     console.log(error);
   }
-}
+};
