@@ -28,3 +28,5 @@ const displayQuiz = async (
   console.log("Your responses from the quiz:\n", responses);
   return responses;
 };
+
+export { displayQuiz };
