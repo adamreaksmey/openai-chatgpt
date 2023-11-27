@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import dotenv from "dotenv";
 import { askRLineQuestion } from "./functions/ask";
 import { quizJson } from "./quiz/index";
+import { displayQuiz } from "./functions/displayQuiz";
 
 dotenv.config();
 const apiKey = process.env.OPEN_AI_KEY;
@@ -70,11 +71,14 @@ const main = async () => {
         const args = JSON.parse(toolCall?.function?.arguments || "{}");
         const questions = args.questions;
 
-        const responses = await displayQuiz(name || "cool quiz", questions);
+        const responses = await displayQuiz(
+          name || "cool quiz",
+          questions,
+          askRLineQuestion
+        );
 
         // toggle flag that sets initial quiz
         isQuizAnswered = true;
-        
       }
     }
   } catch (error) {
