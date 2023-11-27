@@ -47,63 +47,65 @@ const main = async () => {
           "Make a quiz with 2 questions: One open ended, one multiple choice" +
           "Then, give me feedback for the responses.";
 
+      console.log(userQuestion);
+
       // Pass in the user question into the existing thread
       await openai.beta.threads.messages.create(thread.id, {
         role: "user",
         content: userQuestion,
       });
-    }
 
-    // Use runs to wait for the assistant response and then retrieve it
-    const run = await openai.beta.threads.runs.create(thread.id, {
-      assistant_id: assistant.id,
-    });
+      // Use runs to wait for the assistant response and then retrieve it
+      const run = await openai.beta.threads.runs.create(thread.id, {
+        assistant_id: assistant.id,
+      });
 
-    let actualRun = await openai.beta.threads.runs.retrieve(thread.id, run.id);
-
-    // Polling mechanism to see if actualRun is completed
-    const params = {
-      actualRun,
-      askRLineQuestion,
-      isQuizAnswered,
-      openai,
-      thread,
-      run,
-      displayQuiz,
-    };
-    await statusRun(params);
-
-    // Get the last assistant message from the messages array
-    const messages = await openai.beta.threads.messages.list(thread.id);
-    const lastMessageForRun = messages.data
-      .filter(
-        (message) => message.run_id === run.id && message.role === "assistant"
-      )
-      .pop();
-
-    // If an assistant message is found, console.log() it
-    if (lastMessageForRun) {
-      // aparently the `content` array is not correctly typed
-      // content returns an of objects do contain a text object
-      const messageValue = lastMessageForRun.content[0] as {
-        text: { value: string };
+      let actualRun = await openai.beta.threads.runs.retrieve(
+        thread.id,
+        run.id
+      );
+      // Polling mechanism to see if actualRun is completed
+      const params = {
+        actualRun,
+        askRLineQuestion,
+        isQuizAnswered,
+        openai,
+        thread,
+        run,
+        displayQuiz,
       };
+      await statusRun(params);
 
-      console.log(`${messageValue?.text?.value} \n`);
+      // Get the last assistant message from the messages array
+      const messages = await openai.beta.threads.messages.list(thread.id);
+      const lastMessageForRun = messages.data
+        .filter(
+          (message) => message.run_id === run.id && message.role === "assistant"
+        )
+        .pop();
+
+      // If an assistant message is found, console.log() it
+      if (lastMessageForRun) {
+        // aparently the `content` array is not correctly typed
+        // content returns an of objects do contain a text object
+        const messageValue = lastMessageForRun.content[0] as {
+          text: { value: string };
+        };
+
+        console.log(`${messageValue?.text?.value} \n`);
+      }
+
+      // Then ask if the user wants to ask another question and update continueConversation state
+      const continueAsking = await askRLineQuestion(
+        "Do you want to keep having a conversation? (yes/no) "
+      );
+
+      continueConversation = continueAsking.toLowerCase().includes("yes");
+      // If the continueConversation state is falsy show an ending message
+      if (!continueConversation) {
+        console.log("Alrighty then, I hope you learned something!\n");
+      }
     }
-
-    // Then ask if the user wants to ask another question and update continueConversation state
-    const continueAsking = await askRLineQuestion(
-      "Do you want to keep having a conversation? (yes/no) "
-    );
-
-    continueConversation = continueAsking.toLowerCase().includes("yes");
-
-    // If the continueConversation state is falsy show an ending message
-    if (!continueConversation) {
-      console.log("Alrighty then, I hope you learned something!\n");
-    }
-
     // close the readline
     readline.close();
   } catch (error) {

@@ -11,8 +11,4 @@ const askRLineQuestion = async (question: string) => {
   });
 };
 
-const debugHello = () => {
-    return console.log("Hello world")
-}
-
-export { askRLineQuestion, debugHello };
+export { askRLineQuestion };
