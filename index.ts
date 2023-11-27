@@ -79,8 +79,24 @@ const main = async () => {
 
         // toggle flag that sets initial quiz
         isQuizAnswered = true;
+
+        // we must submit the tool outputs to the run to continue
+        await openai.beta.threads.runs.submitToolOutputs(thread.id, run.id, {
+          tool_outputs: [
+            {
+              tool_call_id: toolCall?.id,
+              output: JSON.stringify(responses),
+            },
+          ],
+        });
       }
+      // keep polling until the run is completed
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      actualRun = await openai.beta.threads.runs.retrieve(thread.id, run.id);
     }
+
+    // Get the last assistant message from the messages array
+    const messages = await openai.beta.threads.messages.list(thread.id);
   } catch (error) {
     console.log(error);
   }
