@@ -3,6 +3,10 @@ import dotenv from "dotenv";
 import { askRLineQuestion } from "./functions/ask";
 import { quizJson } from "./quiz/index";
 import { displayQuiz } from "./functions/displayQuiz";
+const readline = require("readline").createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
 dotenv.config();
 const apiKey = process.env.OPEN_AI_KEY;
@@ -97,6 +101,37 @@ const main = async () => {
 
     // Get the last assistant message from the messages array
     const messages = await openai.beta.threads.messages.list(thread.id);
+    const lastMessageForRun = messages.data
+      .filter(
+        (message) => message.run_id === run.id && message.role === "assistant"
+      )
+      .pop();
+
+    // If an assistant message is found, console.log() it
+    if (lastMessageForRun) {
+      // aparently the `content` array is not correctly typed
+      // content returns an of objects do contain a text object
+      const messageValue = lastMessageForRun.content[0] as {
+        text: { value: string };
+      };
+
+      console.log(`${messageValue?.text?.value} \n`);
+    }
+
+    // Then ask if the user wants to ask another question and update continueConversation state
+    const continueAsking = await askRLineQuestion(
+      "Do you want to keep having a conversation? (yes/no) "
+    );
+
+    continueConversation = continueAsking.toLowerCase().includes("yes");
+
+    // If the continueConversation state is falsy show an ending message
+    if (!continueConversation) {
+      console.log("Alrighty then, I hope you learned something!\n");
+    }
+
+    // close the readline
+    readline.close();
   } catch (error) {
     console.log(error);
   }
